@@ -1,0 +1,6 @@
+confluent-kafka
+jsonschema
+protobuf
+requests
+fastavro
+dataclasses
