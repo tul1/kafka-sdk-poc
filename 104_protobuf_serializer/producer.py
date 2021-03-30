@@ -34,7 +34,6 @@ def main(args):
     producer_conf = {'bootstrap.servers': args.bootstrap_servers,
                      'key.serializer': StringSerializer('utf_8'),
                      'value.serializer': protobuf_serializer}
-
     producer = SerializingProducer(producer_conf)
 
     print(f"Producing user records to topic {topic}. ^C to exit.")

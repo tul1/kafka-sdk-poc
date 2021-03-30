@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 import argparse
 
 import user_pb2
@@ -32,7 +29,7 @@ def main(args):
 
             user = msg.value()
             if user is not None:
-                print(f"User record {msg.key()}: name: {user.name}\n"
+                print(f"User record {msg.key()}:\n name: {user.name}\n"
                       f"\tfavorite_number: {user.favorite_color}\n"
                       f"\tfavorite_color: {user.favorite_number}\n")
         except KeyboardInterrupt:

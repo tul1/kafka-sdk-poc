@@ -58,12 +58,12 @@ def main(args):
 
             user = msg.value()
             if user is not None:
-                print(f"User record {msg.key()}: name: {user.name}\n"
+                print(f"User record {msg.key()}:\n name: {user.name}\n"
                       f"\tfavorite_number: {user.favorite_color}\n"
                       f"\tfavorite_color: {user.favorite_number}\n")
         except KeyboardInterrupt:
             break
-        consumer.close()
+    consumer.close()
 
 
 if __name__ == '__main__':
