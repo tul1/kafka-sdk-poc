@@ -3,49 +3,21 @@
 
 import argparse
 
-from dataclasses import dataclass
+import user_pb2
 from confluent_kafka import DeserializingConsumer
-from confluent_kafka.schema_registry import SchemaRegistryClient
-from confluent_kafka.schema_registry.json_schema import JSONDeserializer
+from confluent_kafka.schema_registry.protobuf import ProtobufDeserializer
 from confluent_kafka.serialization import StringDeserializer
-
-
-@dataclass
-class User:
-    """
-    User model
-    """
-    name: str
-    favorite_number: str
-    favorite_color: str
-
-def dict_to_user(obj, ctx):
-    """
-    Converts object literal(dict) to a User instance.
-    :param:obj:dict: Object literal(dict)
-    :param:ctx:SerializationContext: Metadata pertaining to the serialization operation.
-    """
-    if obj is None:
-        return None
-
-    return User(name=obj['name'],
-                favorite_number=obj['favorite_number'],
-                favorite_color=obj['favorite_color'])
 
 
 def main(args):
     topic = args.topic
 
-    schema_registry_conf = {'url': args.schema_registry}
-    schema_registry_client= SchemaRegistryClient(schema_registry_conf)
-    schema_obj = schema_registry_client.get_latest_version(subject_name='example_serde_json-value')
-
-    json_deserializer = JSONDeserializer(schema_obj.schema.schema_str, from_dict=dict_to_user)
+    protobuf_deserializer = ProtobufDeserializer(user_pb2.User)
     string_deserializer = StringDeserializer('utf_8')
 
     consumer_conf = {'bootstrap.servers': args.bootstrap_servers,
                      'key.deserializer': string_deserializer,
-                     'value.deserializer': json_deserializer,
+                     'value.deserializer': protobuf_deserializer,
                      'group.id': args.group,
                      'auto.offset.reset': "earliest"}
 
@@ -54,7 +26,6 @@ def main(args):
 
     while True:
         try:
-            # SIGINT can't be handled when polling, limit timeout to 1 second.
             msg = consumer.poll(1.0)
             if msg is None:
                 continue
@@ -76,9 +47,9 @@ if __name__ == '__main__':
                         help="Bootstrap broker(s) (host[:port])")
     parser.add_argument('-s', dest="schema_registry", required=True,
                         help="Schema Registry (http(s)://host[:port]")
-    parser.add_argument('-t', dest="topic", default="example_serde_json",
+    parser.add_argument('-t', dest="topic", default="example_serde_protobuf",
                         help="Topic name")
-    parser.add_argument('-g', dest="group", default="example_serde_json",
+    parser.add_argument('-g', dest="group", default="example_serde_protobuf",
                         help="Consumer group")
 
     main(parser.parse_args())

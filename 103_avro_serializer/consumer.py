@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 import argparse
 
 from dataclasses import dataclass
@@ -26,12 +23,10 @@ def dict_to_user(obj, ctx):
     :param:obj:dict: Object literal(dict)
     :param:ctx:SerializationContext: Metadata pertaining to the serialization operation.
     """
-    if obj is None:
-        return None
-
-    return User(name=obj['name'],
-                favorite_number=obj['favorite_number'],
-                favorite_color=obj['favorite_color'])
+    if obj:
+        return User(name=obj['name'],
+                    favorite_number=obj['favorite_number'],
+                    favorite_color=obj['favorite_color'])
 
 
 def main(args):
@@ -57,7 +52,6 @@ def main(args):
 
     while True:
         try:
-            # SIGINT can't be handled when polling, limit timeout to 1 second.
             msg = consumer.poll(1.0)
             if msg is None:
                 continue
